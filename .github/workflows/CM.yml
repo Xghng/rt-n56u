@@ -1,5 +1,5 @@
 #修改TNAME: K2P 中的K2P为你需要编译的型号，注意名称要与configs/templates/目录下的名字相同
-name: Build-Padavan PSG1208
+name: Build-Padavan MI-MINI-16M-FRPC
 
 on: 
   workflow_dispatch:
@@ -25,13 +25,13 @@ jobs:
       env:
         KERNEL: 3.4
       run: |
-        git clone --depth=1 https://github.com/h70076222/rt-n56u.git /opt/rt-n56u
+        git clone --depth=1 https://github.com/Xghng/ilip-Padavan.git /opt/rt-n56u
         cd /opt/rt-n56u/toolchain-mipsel
         sh dl_toolchain.sh
         mkdir -p /opt/images/
     - name: Build Firmware
       env:
-        TNAME: PSG1208
+        TNAME: MI-MINI-16M-FRPS
         KERNEL: 3.4
       run: |
         cd /opt/rt-n56u/trunk
@@ -45,12 +45,14 @@ jobs:
         ################################################################################################
         
         sed -i '/CONFIG_FIRMWARE_INCLUDE_ZEROTIER/d' .config #删除配置项zerotier
-        
+        sed -i '/CONFIG_FIRMWARE_INCLUDE_SHADOWSOCKS/d' .config #科学上网SS plus+
+       
         ######################################################################
         #以下选项是定义你需要的功能（y=集成,n=忽略），重新写入到.config文件
         ######################################################################
         
         echo "CONFIG_FIRMWARE_INCLUDE_ZEROTIER=y" >> .config #zerotier ~1.3M
+        echo "CONFIG_FIRMWARE_INCLUDE_SHADOWSOCKS=y" >> .config #科学上网SS plus+
         
         #########################################################################################
         #自定义添加其它功能请参考源码configs/templates/目录下的config文件。按照上面的格式添加即可
@@ -65,5 +67,5 @@ jobs:
       uses: actions/upload-artifact@master
       if: always()
       with:
-        name: Padavan-packages
+        name: Padavan-MI-MINI-16M-FRPS
         path: /opt/images
